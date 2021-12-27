@@ -1,0 +1,76 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    networks:
+      - app-tier
+    ports:
+      - '49158:6379'
+
+  redis-slave:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis
+      - REDIS_MASTER_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+      - REDIS_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    ports:
+      - '49159:6379'
+    depends_on:
+      - redis
+    networks:
+      - app-tier
+  redis-slave-two:
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis
+      - REDIS_MASTER_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+      - REDIS_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    ports:
+      - '49160:6379'
+    depends_on:
+      - redis
+    networks:
+      - app-tier
+  redis-sentinel:
+    image: 'bitnami/redis-sentinel:latest'
+    environment:
+      - REDIS_MASTER_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    depends_on:
+      - redis
+      - redis-slave
+    ports:
+      - '26379:26379'
+    networks:
+      - app-tier
+  redis-sentinel-two:
+    image: 'bitnami/redis-sentinel:latest'
+    environment:
+      - REDIS_MASTER_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    depends_on:
+      - redis
+      - redis-slave
+    ports:
+      - '26380:26379'
+    networks:
+      - app-tier
+  redis-sentinel-three:
+    image: 'bitnami/redis-sentinel:latest'
+    environment:
+      - REDIS_MASTER_PASSWORD=S%11PlKPmhUTm(>u<b;}snV1av%w=Qu%c9:jw
+    depends_on:
+      - redis
+      - redis-slave
+    ports:
+      - '26381:26379'
+    networks:
+      - app-tier
